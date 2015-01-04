@@ -21,49 +21,111 @@ class MSPTreeType:
 
     def __init__(self):
         pass
+   
+    
+class _NodeType:
+    CC_Node, BCC_Node, FCC_Node = range(3)
+
+    def __init__(self):
+        pass
+
+
+class _NodeColor:
+    Node_Red, Node_Green, Node_Blue, Node_Yellow, Node_Ghost = range(5)
+
+    def __init__(self):
+        pass
+
+
+class MSPNodeException(Exception):
+
+    def __init__(self, text, node):
+        self.error = text
+        self.node = node
+
+    def __str__(self):
+        pass
 
 
 class MSPTree(object):
     """ MSP Tree Implementation
     """
 
-    class _NodeType:
-        CC_Node, BCC_Node, FCC_Node = range(3)
-
-        def __init__(self):
-            pass
-
-    class _NodeColor:
-        Node_Red, Node_Green, Node_Blue, Node_Yellow, Node_Ghost = range(5)
-
-        def __init__(self):
-            pass
-
     class _Node:
 
-        def __init__(self, position, color, value=None):
+        def __init__(self, position, color, lattice_type, value=None):
             """
             """
             if value is not None:
                 self.value = value
             self.position = position
-            self.expanded = False
             self.color = color
-            self.lattice = None
+            self.lattice = lattice_type
+            self.children = []
 
         def expand_node(self, depth, scale):
+            """ Expands this node depending on its type
             """
-            """
+            if len(self.children) > 0 or depth <= 0:
+                return
+
+            if self.lattice == _NodeType.CC:
+                self._expand_cc_node(depth, scale)
+            elif self.lattice == _NodeType.BCC_Node:
+                self._expand_bcc_node(depth, scale)
+            elif self.lattice == _NodeType.FCC_Node:
+                self._expand_fcc_node(depth, scale)
+            else:
+                raise MSPNodeException("Tree node had an invalid lattice type.", self)
+
+        @staticmethod
+        def _aas(a, b, scale):
+            return a[0] + b[0]*scale, a[1]+b[1]*scale, a[2]+b[2]*scale
+
+        def _expand_cc_node(self, depth, scale):
+            o = self.position
+            if self.color == _NodeColor.Node_Red:
+                self.children = [
+                    # Add child blue nodes
+                    MSPTree._Node(self._aas(o, (-0.5, 0.5, 0.0), scale), _NodeColor.Node_Blue, _NodeType.FCC_Node),
+                    MSPTree._Node(self._aas(o, (-0.5, 0.0, 0.5), scale), _NodeColor.Node_Blue, _NodeType.FCC_Node),
+                    MSPTree._Node(self._aas(o, (-0.5, -0.5, 0.0), scale), _NodeColor.Node_Blue, _NodeType.FCC_Node),
+                    MSPTree._Node(self._aas(o, (-0.5, 0.0, -0.5), scale), _NodeColor.Node_Blue, _NodeType.FCC_Node),
+
+                    MSPTree._Node(self._aas(o, (0.0, 0.5, 0.5), scale), _NodeColor.Node_Blue, _NodeType.FCC_Node),
+                    MSPTree._Node(self._aas(o, (0.0, 0.5, -0.5), scale), _NodeColor.Node_Blue, _NodeType.FCC_Node),
+                    MSPTree._Node(self._aas(o, (0.0, -0.5, 0.5), scale), _NodeColor.Node_Blue, _NodeType.FCC_Node),
+                    MSPTree._Node(self._aas(o, (0.0, -0.5, -0.5), scale), _NodeColor.Node_Blue, _NodeType.FCC_Node),
+
+                    MSPTree._Node(self._aas(o, (0.5, 0.5, 0.0), scale), _NodeColor.Node_Blue, _NodeType.FCC_Node),
+                    MSPTree._Node(self._aas(o, (0.5, 0.0, 0.5), scale), _NodeColor.Node_Blue, _NodeType.FCC_Node),
+                    MSPTree._Node(self._aas(o, (0.5, -0.5, 0.0), scale), _NodeColor.Node_Blue, _NodeType.FCC_Node),
+                    MSPTree._Node(self._aas(o, (0.5, 0.0, -0.5), scale), _NodeColor.Node_Blue, _NodeType.FCC_Node),
+
+                    # Add ghost nodes
+                    MSPTree._Node(self._aas(o, (0.5, 0.5, 0.5), scale), _NodeColor.Node_Ghost, _NodeType.FCC_Node),
+                    MSPTree._Node(self._aas(o, (0.5, 0.5, -0.5), scale), _NodeColor.Node_Ghost, _NodeType.FCC_Node),
+                    MSPTree._Node(self._aas(o, (0.5, -0.5, 0.5), scale), _NodeColor.Node_Ghost, _NodeType.FCC_Node),
+                    MSPTree._Node(self._aas(o, (0.5, -0.5, -0.5), scale), _NodeColor.Node_Ghost, _NodeType.FCC_Node),
+
+                    MSPTree._Node(self._aas(o, (-0.5, 0.5, 0.5), scale), _NodeColor.Node_Ghost, _NodeType.FCC_Node),
+                    MSPTree._Node(self._aas(o, (-0.5, 0.5, -0.5), scale), _NodeColor.Node_Ghost, _NodeType.FCC_Node),
+                    MSPTree._Node(self._aas(o, (-0.5, -0.5, 0.5), scale), _NodeColor.Node_Ghost, _NodeType.FCC_Node),
+                    MSPTree._Node(self._aas(o, (-0.5, -0.5, -0.5), scale), _NodeColor.Node_Ghost, _NodeType.FCC_Node),
+                ]
+            elif self.color == _NodeColor.Node_Green:
+                pass
+            elif self.color == _NodeColor.Node_Blue:
+                pass
+            elif self.color == _NodeColor.Node_Yellow:
+                pass
+            else:
+                raise MSPNodeException("Attempted to expand an invalid node color", self)
+
+        def _expand_bcc_node(self, depth, scale):
             pass
 
-        def expand_cc_node(self, depth, scale):
-            """
-            """
-            pass
-
-        def expand_bcc_node(self, depth, scale):
-            """
-            """
+        def _expand_fcc_node(self, depth, scale):
             pass
 
     def __init__(self, max_depth, tree_type=MSPTreeType.FunctionSpace):
@@ -71,41 +133,41 @@ class MSPTree(object):
         grid with the 27 points in {-1,0,1}^3
         """
         self.roots = [
-            self._Node((0, 0, 0), self._NodeColor.Node_Red),
+            self._Node((0, 0, 0), _NodeColor.Node_Red, _NodeType.CC_Node),
 
             # Green nodes
-            self._Node((1, 1, 1), self._NodeColor.Node_Green),
-            self._Node((1, 1, -1), self._NodeColor.Node_Green),
-            self._Node((1, -1, 1), self._NodeColor.Node_Green),
-            self._Node((1, -1, -1), self._NodeColor.Node_Green),
-            self._Node((-1, 1, 1), self._NodeColor.Node_Green),
-            self._Node((-1, 1, -1), self._NodeColor.Node_Green),
-            self._Node((-1, -1, 1), self._NodeColor.Node_Green),
-            self._Node((-1, -1, -1), self._NodeColor.Node_Green),
+            self._Node((1, 1, 1), _NodeColor.Node_Green, _NodeType.CC_Node),
+            self._Node((1, 1, -1), _NodeColor.Node_Green, _NodeType.CC_Node),
+            self._Node((1, -1, 1), _NodeColor.Node_Green, _NodeType.CC_Node),
+            self._Node((1, -1, -1), _NodeColor.Node_Green, _NodeType.CC_Node),
+            self._Node((-1, 1, 1), _NodeColor.Node_Green, _NodeType.CC_Node),
+            self._Node((-1, 1, -1), _NodeColor.Node_Green, _NodeType.CC_Node),
+            self._Node((-1, -1, 1), _NodeColor.Node_Green, _NodeType.CC_Node),
+            self._Node((-1, -1, -1), _NodeColor.Node_Green, _NodeType.CC_Node),
 
             # Blue nodes
-            self._Node((-1, 1, 0), self._NodeColor.Node_Blue),
-            self._Node((-1, 0, 1), self._NodeColor.Node_Blue),
-            self._Node((-1, 0, -1), self._NodeColor.Node_Blue),
-            self._Node((-1, -1, 0), self._NodeColor.Node_Blue),
+            self._Node((-1, 1, 0), _NodeColor.Node_Blue, _NodeType.CC_Node),
+            self._Node((-1, 0, 1), _NodeColor.Node_Blue, _NodeType.CC_Node),
+            self._Node((-1, 0, -1), _NodeColor.Node_Blue, _NodeType.CC_Node),
+            self._Node((-1, -1, 0), _NodeColor.Node_Blue, _NodeType.CC_Node),
 
-            self._Node((0, 1, 1), self._NodeColor.Node_Blue),
-            self._Node((0, 1, -1), self._NodeColor.Node_Blue),
-            self._Node((0, -1, 1), self._NodeColor.Node_Blue),
-            self._Node((0, -1, -1), self._NodeColor.Node_Blue),
+            self._Node((0, 1, 1), _NodeColor.Node_Blue, _NodeType.CC_Node),
+            self._Node((0, 1, -1), _NodeColor.Node_Blue, _NodeType.CC_Node),
+            self._Node((0, -1, 1), _NodeColor.Node_Blue, _NodeType.CC_Node),
+            self._Node((0, -1, -1), _NodeColor.Node_Blue, _NodeType.CC_Node),
 
-            self._Node((1, 1, 0), self._NodeColor.Node_Blue),
-            self._Node((1, 0, 1), self._NodeColor.Node_Blue),
-            self._Node((1, 0, -1), self._NodeColor.Node_Blue),
-            self._Node((1, -1, 0), self._NodeColor.Node_Blue),
+            self._Node((1, 1, 0), _NodeColor.Node_Blue, _NodeType.CC_Node),
+            self._Node((1, 0, 1), _NodeColor.Node_Blue, _NodeType.CC_Node),
+            self._Node((1, 0, -1), _NodeColor.Node_Blue, _NodeType.CC_Node),
+            self._Node((1, -1, 0), _NodeColor.Node_Blue, _NodeType.CC_Node),
 
             # Yellow nodes
-            self._Node((1, 0, 0), self._NodeColor.Node_Yellow),
-            self._Node((-1, 0, 0), self._NodeColor.Node_Yellow),
-            self._Node((0, 1, 0), self._NodeColor.Node_Yellow),
-            self._Node((0, -1, 0), self._NodeColor.Node_Yellow),
-            self._Node((0, 0, 1), self._NodeColor.Node_Yellow),
-            self._Node((0, 0, -1), self._NodeColor.Node_Yellow),
+            self._Node((1, 0, 0), _NodeColor.Node_Yellow, _NodeType.CC_Node),
+            self._Node((-1, 0, 0), _NodeColor.Node_Yellow, _NodeType.CC_Node),
+            self._Node((0, 1, 0), _NodeColor.Node_Yellow, _NodeType.CC_Node),
+            self._Node((0, -1, 0), _NodeColor.Node_Yellow, _NodeType.CC_Node),
+            self._Node((0, 0, 1), _NodeColor.Node_Yellow, _NodeType.CC_Node),
+            self._Node((0, 0, -1), _NodeColor.Node_Yellow, _NodeType.CC_Node),
         ]
 
         self.max_depth = max_depth
