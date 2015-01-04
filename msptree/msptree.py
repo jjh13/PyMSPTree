@@ -159,10 +159,30 @@ class MSPTree(object):
             else:
                 raise MSPNodeException("Attempted to expand an invalid node color", self)
 
-        def _expand_bcc_node(self, depth, scale):
-            pass
-
         def _expand_fcc_node(self, depth, scale):
+            o = self.position
+            if self.color == _NodeColor.Node_Red:
+                self.children = [
+
+                    MSPTree._Node(0, _NodeColor.Node_Red, _NodeType.BCC_Node),
+                ]
+            elif self.color == _NodeColor.Node_Green:
+                self.children = [
+
+                    MSPTree._Node(0, _NodeColor.Node_Red, _NodeType.BCC_Node),
+                ]
+            elif self.color == _NodeColor.Node_Blue:
+                self.children = [
+                    MSPTree._Node(o, _NodeColor.Node_Red, _NodeType.BCC_Node)
+                ]
+            elif self.color == _NodeColor.Node_Ghost:
+                self.children = [
+                    MSPTree._Node(o, _NodeColor.Node_Blue, _NodeType.BCC_Node)
+                ]
+            else:
+                raise MSPNodeException("Attempted to expand an invalid node color", self)
+
+        def _expand_bcc_node(self, depth, scale):
             pass
 
     def __init__(self, max_depth, tree_type=MSPTreeType.FunctionSpace):
