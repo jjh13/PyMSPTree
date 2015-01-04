@@ -69,7 +69,7 @@ class MSPTree(object):
             if len(self.children) > 0 or depth <= 0:
                 return
 
-            if self.lattice == _NodeType.CC:
+            if self.lattice == _NodeType.CC_Node:
                 self._expand_cc_node(depth, scale)
             elif self.lattice == _NodeType.BCC_Node:
                 self._expand_bcc_node(depth, scale)
@@ -165,11 +165,15 @@ class MSPTree(object):
                 self.children = [
 
                     MSPTree._Node(0, _NodeColor.Node_Red, _NodeType.BCC_Node),
+
+                    # TODO
                 ]
             elif self.color == _NodeColor.Node_Green:
                 self.children = [
 
                     MSPTree._Node(0, _NodeColor.Node_Red, _NodeType.BCC_Node),
+
+                    # TODO
                 ]
             elif self.color == _NodeColor.Node_Blue:
                 self.children = [
