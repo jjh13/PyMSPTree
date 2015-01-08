@@ -150,7 +150,7 @@ class MSPTree(object):
                 ]
             elif self.color == _NodeColor.Node_Blue:
                 self.children = [
-                    MSPTree._Node(o, _NodeColor.Node_Red, _NodeType.FCC_Node)
+                    MSPTree._Node(o, _NodeColor.Node_Red, _NodeType.FCC_Node),
                 ]
             elif self.color == _NodeColor.Node_Yellow:
                 self.children = [
@@ -164,14 +164,42 @@ class MSPTree(object):
             if self.color == _NodeColor.Node_Red:
                 self.children = [
 
-                    MSPTree._Node(0, _NodeColor.Node_Red, _NodeType.BCC_Node),
+                    MSPTree._Node(o, _NodeColor.Node_Red, _NodeType.BCC_Node),
 
-                    # TODO
+                    # These cases are based on parity, check the paper
+                    MSPTree._Node(self._aas(o, (0.25, 0.25, 0.25), scale), _NodeColor.Node_Yellow, _NodeType.BCC_Node),
+                    MSPTree._Node(self._aas(o, (0.25, 0.25, -0.25), scale), _NodeColor.Node_Green, _NodeType.BCC_Node),
+                    MSPTree._Node(self._aas(o, (0.25, -0.25, 0.25), scale), _NodeColor.Node_Green, _NodeType.BCC_Node),
+                    MSPTree._Node(self._aas(o, (0.25, -0.25, -0.25), scale), _NodeColor.Node_Yellow, _NodeType.BCC_Node),
+
+                    MSPTree._Node(self._aas(o, (-0.25, 0.25, -0.25), scale), _NodeColor.Node_Yellow, _NodeType.BCC_Node),
+                    MSPTree._Node(self._aas(o, (-0.25, 0.25, 0.25), scale), _NodeColor.Node_Green, _NodeType.BCC_Node),
+                    MSPTree._Node(self._aas(o, (-0.25, -0.25, -0.25), scale), _NodeColor.Node_Green, _NodeType.BCC_Node),
+                    MSPTree._Node(self._aas(o, (-0.25, -0.25, 0.25), scale), _NodeColor.Node_Yellow, _NodeType.BCC_Node),
+
+                    MSPTree._Node(self._aas(o, (0.5, 0.0, 0.0), scale), _NodeColor.Node_Blue, _NodeType.BCC_Node),
+                    MSPTree._Node(self._aas(o, (0.0, 0.5, 0.0), scale), _NodeColor.Node_Blue, _NodeType.BCC_Node),
+                    MSPTree._Node(self._aas(o, (0.0, 0.0, 0.5), scale), _NodeColor.Node_Blue, _NodeType.BCC_Node),
+
+                    MSPTree._Node(self._aas(o, (-0.5, 0.0, 0.0), scale), _NodeColor.Node_Blue, _NodeType.BCC_Node),
+                    MSPTree._Node(self._aas(o, (0.0, -0.5, 0.0), scale), _NodeColor.Node_Blue, _NodeType.BCC_Node),
+                    MSPTree._Node(self._aas(o, (0.0, 0.0, -0.5), scale), _NodeColor.Node_Blue, _NodeType.BCC_Node),
+
                 ]
             elif self.color == _NodeColor.Node_Green:
                 self.children = [
 
-                    MSPTree._Node(0, _NodeColor.Node_Red, _NodeType.BCC_Node),
+                    MSPTree._Node(o, _NodeColor.Node_Red, _NodeType.BCC_Node),
+
+                    MSPTree._Node(self._aas(o, (0.25, 0.25, 0.25), scale), _NodeColor.Node_Yellow, _NodeType.BCC_Node),
+                    MSPTree._Node(self._aas(o, (0.25, 0.25, -0.25), scale), _NodeColor.Node_Green, _NodeType.BCC_Node),
+                    MSPTree._Node(self._aas(o, (0.25, -0.25, 0.25), scale), _NodeColor.Node_Green, _NodeType.BCC_Node),
+                    MSPTree._Node(self._aas(o, (0.25, -0.25, -0.25), scale), _NodeColor.Node_Yellow, _NodeType.BCC_Node),
+
+                    MSPTree._Node(self._aas(o, (-0.25, 0.25, -0.25), scale), _NodeColor.Node_Yellow, _NodeType.BCC_Node),
+                    MSPTree._Node(self._aas(o, (-0.25, 0.25, 0.25), scale), _NodeColor.Node_Green, _NodeType.BCC_Node),
+                    MSPTree._Node(self._aas(o, (-0.25, -0.25, -0.25), scale), _NodeColor.Node_Green, _NodeType.BCC_Node),
+                    MSPTree._Node(self._aas(o, (-0.25, -0.25, 0.25), scale), _NodeColor.Node_Yellow, _NodeType.BCC_Node),
 
                     # TODO
                 ]
@@ -179,9 +207,9 @@ class MSPTree(object):
                 self.children = [
                     MSPTree._Node(o, _NodeColor.Node_Red, _NodeType.BCC_Node)
                 ]
-            elif self.color == _NodeColor.Node_Ghost:
+            elif self.color == _NodeColor.Yellow:
                 self.children = [
-                    MSPTree._Node(o, _NodeColor.Node_Blue, _NodeType.BCC_Node)
+                    MSPTree._Node(o, _NodeColor.Node_Green, _NodeType.BCC_Node)
                 ]
             else:
                 raise MSPNodeException("Attempted to expand an invalid node color", self)
