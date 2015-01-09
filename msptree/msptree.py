@@ -215,7 +215,46 @@ class MSPTree(object):
                 raise MSPNodeException("Attempted to expand an invalid node color", self)
 
         def _expand_bcc_node(self, depth, scale):
-            pass
+            o = self.position
+            if self.color == _NodeColor.Node_Red:
+                self.children = [
+
+                    MSPTree._Node(o, _NodeColor.Node_Red, _NodeType.CC_Node),
+
+                    MSPTree._Node(self._aas(o, (0.25, 0.0, 0.0), scale), _NodeColor.Node_Blue, _NodeType.CC_Node),
+                    MSPTree._Node(self._aas(o, (0.0, 0.25, 0.0), scale), _NodeColor.Node_Blue, _NodeType.CC_Node),
+                    MSPTree._Node(self._aas(o, (0.0, 0.0, 0.25), scale), _NodeColor.Node_Blue, _NodeType.CC_Node),
+
+                    MSPTree._Node(self._aas(o, (-0.25, 0.0, 0.0), scale), _NodeColor.Node_Blue, _NodeType.CC_Node),
+                    MSPTree._Node(self._aas(o, (0.0, -0.25, 0.0), scale), _NodeColor.Node_Blue, _NodeType.CC_Node),
+                    MSPTree._Node(self._aas(o, (0.0, 0.0, -0.25), scale), _NodeColor.Node_Blue, _NodeType.CC_Node),
+
+                ]
+            elif self.color == _NodeColor.Node_Green:
+                self.children = [
+
+                    MSPTree._Node(o, _NodeColor.Node_Green, _NodeType.CC_Node),
+
+                    MSPTree._Node(self._aas(o, (0.25, 0.0, 0.0), scale), _NodeColor.Node_Blue, _NodeType.CC_Node),
+                    MSPTree._Node(self._aas(o, (0.0, 0.25, 0.0), scale), _NodeColor.Node_Blue, _NodeType.CC_Node),
+                    MSPTree._Node(self._aas(o, (0.0, 0.0, 0.25), scale), _NodeColor.Node_Blue, _NodeType.CC_Node),
+
+                    MSPTree._Node(self._aas(o, (-0.25, 0.0, 0.0), scale), _NodeColor.Node_Blue, _NodeType.CC_Node),
+                    MSPTree._Node(self._aas(o, (0.0, -0.25, 0.0), scale), _NodeColor.Node_Blue, _NodeType.CC_Node),
+                    MSPTree._Node(self._aas(o, (0.0, 0.0, -0.25), scale), _NodeColor.Node_Blue, _NodeType.CC_Node),
+
+                    # TODO
+                ]
+            elif self.color == _NodeColor.Node_Blue:
+                self.children = [
+                    MSPTree._Node(o, _NodeColor.Node_Red, _NodeType.CC_Node)
+                ]
+            elif self.color == _NodeColor.Yellow:
+                self.children = [
+                    MSPTree._Node(o, _NodeColor.Node_Green, _NodeType.CC_Node)
+                ]
+            else:
+                raise MSPNodeException("Attempted to expand an invalid node color", self)
 
     def __init__(self, max_depth, tree_type=MSPTreeType.FunctionSpace):
         """ Initializes the tree, whose default expansion is the unit CC
