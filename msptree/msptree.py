@@ -55,6 +55,7 @@ class MSPTree(object):
 
         def __init__(self, position, color, lattice_type, value=None):
             """
+
             """
             if value is not None:
                 self.value = value
@@ -63,8 +64,16 @@ class MSPTree(object):
             self.lattice = lattice_type
             self.children = []
 
+        def find_closest_node(self, point):
+            dot = lambda x, y: x[0]*y[0] + x[1]*y[1] + x[2]*y[2]
+            if len(self.children) == 0:
+                return self
+            node = min([(dot(point, n.position), n) for n in self.children], key=lambda x: x[0])[1]
+            return node.find_closest_node(point)
+
         def expand_node(self, depth, scale):
-            """ Expands this node depending on its type
+            """
+            Expands this node depending on its type
             """
             if len(self.children) > 0 or depth <= 0:
                 return
@@ -87,7 +96,7 @@ class MSPTree(object):
             if self.color == _NodeColor.Node_Red:
                 self.children = [
 
-                    MSPTree._Node(0, _NodeColor.Node_Red, _NodeType.FCC_Node),
+                    MSPTree._Node(o, _NodeColor.Node_Red, _NodeType.FCC_Node),
 
                     # Add child blue nodes
                     MSPTree._Node(self._aas(o, (-0.5, 0.5, 0.0), scale),
@@ -139,7 +148,7 @@ class MSPTree(object):
             elif self.color == _NodeColor.Node_Green:
                 self.children = [
 
-                    MSPTree._Node(0, _NodeColor.Node_Green, _NodeType.FCC_Node),
+                    MSPTree._Node(o, _NodeColor.Node_Green, _NodeType.FCC_Node),
 
                     # Add child blue nodes
                     MSPTree._Node(self._aas(o, (-0.5, 0.5, 0.0), scale),
@@ -327,6 +336,10 @@ class MSPTree(object):
             else:
                 raise MSPNodeException("Attempted to expand an invalid node color", self)
 
+    #
+    #
+    #
+
     def __init__(self, max_depth, tree_type=MSPTreeType.FunctionSpace):
         """ Initializes the tree, whose default expansion is the unit CC
         grid with the 27 points in {-1,0,1}^3
@@ -373,7 +386,9 @@ class MSPTree(object):
         self.tree_type = tree_type
 
     def find_closest_node(self, point, level=-1):
-        pass
+        dot = lambda x, y: x[0]*y[0] + x[1]*y[1] + x[2]*y[2]
+        node = min([(dot(point, n.position), n) for n in self.roots], key=lambda x: x[0])[1]
+        return node.find_closest_node(point)
 
     def expand_to(self, point):
         pass
