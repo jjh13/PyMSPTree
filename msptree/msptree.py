@@ -66,10 +66,22 @@ class MSPTree(object):
 
         def find_closest_node(self, point):
             dot = lambda x, y: x[0]*y[0] + x[1]*y[1] + x[2]*y[2]
-            if len(self.children) == 0:
+            if len(self.children) <= 0:
                 return self
             node = min([(dot(point, n.position), n) for n in self.children], key=lambda x: x[0])[1]
             return node.find_closest_node(point)
+
+        def expand_to(self, point, depth=0, max_depth=12):
+            dot = lambda x, y: x[0]*y[0] + x[1]*y[1] + x[2]*y[2]
+            if depth >= max_depth:
+                return
+
+            if len(self.children) <= 0:
+                scale = 0.5**int(depth/3)
+                self.expand_node(depth, scale)
+
+            node = min([(dot(point, n.position), n) for n in self.children], key=lambda x: x[0])[1]
+            node.expand_to(point, depth+1, max_depth)
 
         def expand_node(self, depth, scale):
             """
@@ -391,5 +403,6 @@ class MSPTree(object):
         return node.find_closest_node(point)
 
     def expand_to(self, point):
-        pass
-
+        dot = lambda x, y: x[0]*y[0] + x[1]*y[1] + x[2]*y[2]
+        node = min([(dot(point, n.position), n) for n in self.roots], key=lambda x: x[0])[1]
+        node.expand_to(point, 0, self.max_depth)
