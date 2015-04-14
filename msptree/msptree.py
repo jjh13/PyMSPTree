@@ -53,7 +53,7 @@ class MSPTree(object):
 
     class _Node:
 
-        def __init__(self, position, color, lattice_type, value=None):
+        def __init__(self, position, color, lattice_type, value=None, scale=1):
             """
 
             """
@@ -63,6 +63,7 @@ class MSPTree(object):
             self.color = color
             self.lattice = lattice_type
             self.children = []
+            self.scale = scale
 
         def __unicode__(self):
             return "Node at %s" % str(self.position)
@@ -93,19 +94,20 @@ class MSPTree(object):
             node = min([(dot(point, n.position), n) for n in self.children], key=lambda x: x[0])[1]
             node.expand_to(point, depth+1, max_depth)
 
-        def expand_node(self, depth, scale):
+        def expand_node(self):
             """
             Expands this node depending on its type
             """
-            if len(self.children) > 0 or depth <= 0:
+            if len(self.children) > 0:
                 return
 
+            scale = self.scale
             if self.lattice == _NodeType.CC_Node:
-                self._expand_cc_node(depth, scale)
+                self._expand_cc_node(scale)
             elif self.lattice == _NodeType.BCC_Node:
-                self._expand_bcc_node(depth, scale)
+                self._expand_bcc_node(scale)
             elif self.lattice == _NodeType.FCC_Node:
-                self._expand_fcc_node(depth, scale)
+                self._expand_fcc_node(scale)
             else:
                 raise MSPNodeException("Tree node had an invalid lattice type.", self)
 
@@ -113,8 +115,9 @@ class MSPTree(object):
         def _aas(a, b, scale):
             return a[0] + b[0]*scale, a[1]+b[1]*scale, a[2]+b[2]*scale
 
-        def _expand_cc_node(self, depth, scale):
+        def _expand_cc_node(self, scale):
             o = self.position
+            ns = self.scale * 0.5
             if self.color == _NodeColor.Node_Red:
                 self.children = [
 
@@ -122,50 +125,50 @@ class MSPTree(object):
 
                     # Add child blue nodes
                     MSPTree._Node(self._aas(o, (-0.5, 0.5, 0.0), scale),
-                                  _NodeColor.Node_Blue, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.FCC_Node, ns),
                     MSPTree._Node(self._aas(o, (-0.5, 0.0, 0.5), scale),
-                                  _NodeColor.Node_Blue, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.FCC_Node, ns),
                     MSPTree._Node(self._aas(o, (-0.5, -0.5, 0.0), scale),
-                                  _NodeColor.Node_Blue, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.FCC_Node, ns),
                     MSPTree._Node(self._aas(o, (-0.5, 0.0, -0.5), scale),
-                                  _NodeColor.Node_Blue, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.FCC_Node, ns),
 
                     MSPTree._Node(self._aas(o, (0.0, 0.5, 0.5), scale),
-                                  _NodeColor.Node_Blue, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.FCC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.0, 0.5, -0.5), scale),
-                                  _NodeColor.Node_Blue, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.FCC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.0, -0.5, 0.5), scale),
-                                  _NodeColor.Node_Blue, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.FCC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.0, -0.5, -0.5), scale),
-                                  _NodeColor.Node_Blue, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.FCC_Node, ns),
 
                     MSPTree._Node(self._aas(o, (0.5, 0.5, 0.0), scale),
-                                  _NodeColor.Node_Blue, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.FCC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.5, 0.0, 0.5), scale),
-                                  _NodeColor.Node_Blue, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.FCC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.5, -0.5, 0.0), scale),
-                                  _NodeColor.Node_Blue, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.FCC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.5, 0.0, -0.5), scale),
-                                  _NodeColor.Node_Blue, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.FCC_Node, ns),
 
                     # Add ghost nodes
                     MSPTree._Node(self._aas(o, (0.5, 0.5, 0.5), scale),
-                                  _NodeColor.Node_Ghost, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Ghost, _NodeType.FCC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.5, 0.5, -0.5), scale),
-                                  _NodeColor.Node_Ghost, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Ghost, _NodeType.FCC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.5, -0.5, 0.5), scale),
-                                  _NodeColor.Node_Ghost, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Ghost, _NodeType.FCC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.5, -0.5, -0.5), scale),
-                                  _NodeColor.Node_Ghost, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Ghost, _NodeType.FCC_Node, ns),
 
                     MSPTree._Node(self._aas(o, (-0.5, 0.5, 0.5), scale),
-                                  _NodeColor.Node_Ghost, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Ghost, _NodeType.FCC_Node, ns),
                     MSPTree._Node(self._aas(o, (-0.5, 0.5, -0.5), scale),
-                                  _NodeColor.Node_Ghost, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Ghost, _NodeType.FCC_Node, ns),
                     MSPTree._Node(self._aas(o, (-0.5, -0.5, 0.5), scale),
-                                  _NodeColor.Node_Ghost, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Ghost, _NodeType.FCC_Node, ns),
                     MSPTree._Node(self._aas(o, (-0.5, -0.5, -0.5), scale),
-                                  _NodeColor.Node_Ghost, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Ghost, _NodeType.FCC_Node, ns),
                 ]
             elif self.color == _NodeColor.Node_Green:
                 self.children = [
@@ -174,186 +177,188 @@ class MSPTree(object):
 
                     # Add child blue nodes
                     MSPTree._Node(self._aas(o, (-0.5, 0.5, 0.0), scale),
-                                  _NodeColor.Node_Blue, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.FCC_Node, ns),
                     MSPTree._Node(self._aas(o, (-0.5, 0.0, 0.5), scale),
-                                  _NodeColor.Node_Blue, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.FCC_Node, ns),
                     MSPTree._Node(self._aas(o, (-0.5, -0.5, 0.0), scale),
-                                  _NodeColor.Node_Blue, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.FCC_Node, ns),
                     MSPTree._Node(self._aas(o, (-0.5, 0.0, -0.5), scale),
-                                  _NodeColor.Node_Blue, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.FCC_Node, ns),
 
                     MSPTree._Node(self._aas(o, (0.0, 0.5, 0.5), scale),
-                                  _NodeColor.Node_Blue, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.FCC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.0, 0.5, -0.5), scale),
-                                  _NodeColor.Node_Blue, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.FCC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.0, -0.5, 0.5), scale),
-                                  _NodeColor.Node_Blue, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.FCC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.0, -0.5, -0.5), scale),
-                                  _NodeColor.Node_Blue, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.FCC_Node, ns),
 
                     MSPTree._Node(self._aas(o, (0.5, 0.5, 0.0), scale),
-                                  _NodeColor.Node_Blue, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.FCC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.5, 0.0, 0.5), scale),
-                                  _NodeColor.Node_Blue, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.FCC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.5, -0.5, 0.0), scale),
-                                  _NodeColor.Node_Blue, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.FCC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.5, 0.0, -0.5), scale),
-                                  _NodeColor.Node_Blue, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.FCC_Node, ns),
 
                     # Add ghost nodes
                     MSPTree._Node(self._aas(o, (0.5, 0.5, 0.5), scale),
-                                  _NodeColor.Node_Ghost, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Ghost, _NodeType.FCC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.5, 0.5, -0.5), scale),
-                                  _NodeColor.Node_Ghost, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Ghost, _NodeType.FCC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.5, -0.5, 0.5), scale),
-                                  _NodeColor.Node_Ghost, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Ghost, _NodeType.FCC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.5, -0.5, -0.5), scale),
-                                  _NodeColor.Node_Ghost, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Ghost, _NodeType.FCC_Node, ns),
 
                     MSPTree._Node(self._aas(o, (-0.5, 0.5, 0.5), scale),
-                                  _NodeColor.Node_Ghost, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Ghost, _NodeType.FCC_Node, ns),
                     MSPTree._Node(self._aas(o, (-0.5, 0.5, -0.5), scale),
-                                  _NodeColor.Node_Ghost, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Ghost, _NodeType.FCC_Node, ns),
                     MSPTree._Node(self._aas(o, (-0.5, -0.5, 0.5), scale),
-                                  _NodeColor.Node_Ghost, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Ghost, _NodeType.FCC_Node, ns),
                     MSPTree._Node(self._aas(o, (-0.5, -0.5, -0.5), scale),
-                                  _NodeColor.Node_Ghost, _NodeType.FCC_Node),
+                                  _NodeColor.Node_Ghost, _NodeType.FCC_Node, ns),
                 ]
             elif self.color == _NodeColor.Node_Blue:
                 self.children = [
-                    MSPTree._Node(o, _NodeColor.Node_Red, _NodeType.FCC_Node),
+                    MSPTree._Node(o, _NodeColor.Node_Red, _NodeType.FCC_Node, ns),
                 ]
             elif self.color == _NodeColor.Node_Yellow:
                 self.children = [
-                    MSPTree._Node(o, _NodeColor.Node_Green, _NodeType.FCC_Node)
+                    MSPTree._Node(o, _NodeColor.Node_Green, _NodeType.FCC_Node, ns),
                 ]
             else:
                 raise MSPNodeException("Attempted to expand an invalid node color", self)
 
-        def _expand_fcc_node(self, depth, scale):
+        def _expand_fcc_node(self, scale):
             o = self.position
+            ns = self.scale
             if self.color == _NodeColor.Node_Red:
                 self.children = [
 
-                    MSPTree._Node(o, _NodeColor.Node_Red, _NodeType.BCC_Node),
+                    MSPTree._Node(o, _NodeColor.Node_Red, _NodeType.BCC_Node, ns),
 
                     # These cases are based on parity, check the paper
                     MSPTree._Node(self._aas(o, (0.25, 0.25, 0.25), scale),
-                                  _NodeColor.Node_Yellow, _NodeType.BCC_Node),
+                                  _NodeColor.Node_Yellow, _NodeType.BCC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.25, 0.25, -0.25), scale),
-                                  _NodeColor.Node_Green, _NodeType.BCC_Node),
+                                  _NodeColor.Node_Green, _NodeType.BCC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.25, -0.25, 0.25), scale),
-                                  _NodeColor.Node_Green, _NodeType.BCC_Node),
+                                  _NodeColor.Node_Green, _NodeType.BCC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.25, -0.25, -0.25), scale),
-                                  _NodeColor.Node_Yellow, _NodeType.BCC_Node),
+                                  _NodeColor.Node_Yellow, _NodeType.BCC_Node, ns),
 
                     MSPTree._Node(self._aas(o, (-0.25, 0.25, -0.25), scale),
-                                  _NodeColor.Node_Yellow, _NodeType.BCC_Node),
+                                  _NodeColor.Node_Yellow, _NodeType.BCC_Node, ns),
                     MSPTree._Node(self._aas(o, (-0.25, 0.25, 0.25), scale),
-                                  _NodeColor.Node_Green, _NodeType.BCC_Node),
+                                  _NodeColor.Node_Green, _NodeType.BCC_Node, ns),
                     MSPTree._Node(self._aas(o, (-0.25, -0.25, -0.25), scale),
-                                  _NodeColor.Node_Green, _NodeType.BCC_Node),
+                                  _NodeColor.Node_Green, _NodeType.BCC_Node, ns),
                     MSPTree._Node(self._aas(o, (-0.25, -0.25, 0.25), scale),
-                                  _NodeColor.Node_Yellow, _NodeType.BCC_Node),
+                                  _NodeColor.Node_Yellow, _NodeType.BCC_Node, ns),
 
                     MSPTree._Node(self._aas(o, (0.5, 0.0, 0.0), scale),
-                                  _NodeColor.Node_Blue, _NodeType.BCC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.BCC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.0, 0.5, 0.0), scale),
-                                  _NodeColor.Node_Blue, _NodeType.BCC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.BCC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.0, 0.0, 0.5), scale),
-                                  _NodeColor.Node_Blue, _NodeType.BCC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.BCC_Node, ns),
 
                     MSPTree._Node(self._aas(o, (-0.5, 0.0, 0.0), scale),
-                                  _NodeColor.Node_Blue, _NodeType.BCC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.BCC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.0, -0.5, 0.0), scale),
-                                  _NodeColor.Node_Blue, _NodeType.BCC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.BCC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.0, 0.0, -0.5), scale),
-                                  _NodeColor.Node_Blue, _NodeType.BCC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.BCC_Node, ns),
 
                 ]
             elif self.color == _NodeColor.Node_Green:
                 self.children = [
 
-                    MSPTree._Node(o, _NodeColor.Node_Red, _NodeType.BCC_Node),
+                    MSPTree._Node(o, _NodeColor.Node_Red, _NodeType.BCC_Node, ns),
 
                     MSPTree._Node(self._aas(o, (0.25, 0.25, 0.25), scale),
-                                  _NodeColor.Node_Yellow, _NodeType.BCC_Node),
+                                  _NodeColor.Node_Yellow, _NodeType.BCC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.25, 0.25, -0.25), scale),
-                                  _NodeColor.Node_Green, _NodeType.BCC_Node),
+                                  _NodeColor.Node_Green, _NodeType.BCC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.25, -0.25, 0.25), scale),
-                                  _NodeColor.Node_Green, _NodeType.BCC_Node),
+                                  _NodeColor.Node_Green, _NodeType.BCC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.25, -0.25, -0.25), scale),
-                                  _NodeColor.Node_Yellow, _NodeType.BCC_Node),
+                                  _NodeColor.Node_Yellow, _NodeType.BCC_Node, ns),
 
                     MSPTree._Node(self._aas(o, (-0.25, 0.25, -0.25), scale),
-                                  _NodeColor.Node_Yellow, _NodeType.BCC_Node),
+                                  _NodeColor.Node_Yellow, _NodeType.BCC_Node, ns),
                     MSPTree._Node(self._aas(o, (-0.25, 0.25, 0.25), scale),
-                                  _NodeColor.Node_Green, _NodeType.BCC_Node),
+                                  _NodeColor.Node_Green, _NodeType.BCC_Node, ns),
                     MSPTree._Node(self._aas(o, (-0.25, -0.25, -0.25), scale),
-                                  _NodeColor.Node_Green, _NodeType.BCC_Node),
+                                  _NodeColor.Node_Green, _NodeType.BCC_Node, ns),
                     MSPTree._Node(self._aas(o, (-0.25, -0.25, 0.25), scale),
-                                  _NodeColor.Node_Yellow, _NodeType.BCC_Node),
+                                  _NodeColor.Node_Yellow, _NodeType.BCC_Node, ns),
                 ]
             elif self.color == _NodeColor.Node_Blue:
                 self.children = [
-                    MSPTree._Node(o, _NodeColor.Node_Red, _NodeType.BCC_Node)
+                    MSPTree._Node(o, _NodeColor.Node_Red, _NodeType.BCC_Node, ns)
                 ]
             elif self.color == _NodeColor.Yellow:
                 self.children = [
-                    MSPTree._Node(o, _NodeColor.Node_Green, _NodeType.BCC_Node)
+                    MSPTree._Node(o, _NodeColor.Node_Green, _NodeType.BCC_Node, ns)
                 ]
             else:
                 raise MSPNodeException("Attempted to expand an invalid node color", self)
 
-        def _expand_bcc_node(self, depth, scale):
+        def _expand_bcc_node(self, scale):
             o = self.position
+            ns = self.scale
             if self.color == _NodeColor.Node_Red:
                 self.children = [
 
-                    MSPTree._Node(o, _NodeColor.Node_Red, _NodeType.CC_Node),
+                    MSPTree._Node(o, _NodeColor.Node_Red, _NodeType.CC_Node, ns),
 
                     MSPTree._Node(self._aas(o, (0.25, 0.0, 0.0), scale),
-                                  _NodeColor.Node_Blue, _NodeType.CC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.CC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.0, 0.25, 0.0), scale),
-                                  _NodeColor.Node_Blue, _NodeType.CC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.CC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.0, 0.0, 0.25), scale),
-                                  _NodeColor.Node_Blue, _NodeType.CC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.CC_Node, ns),
 
                     MSPTree._Node(self._aas(o, (-0.25, 0.0, 0.0), scale),
-                                  _NodeColor.Node_Blue, _NodeType.CC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.CC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.0, -0.25, 0.0), scale),
-                                  _NodeColor.Node_Blue, _NodeType.CC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.CC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.0, 0.0, -0.25), scale),
-                                  _NodeColor.Node_Blue, _NodeType.CC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.CC_Node, ns),
 
                 ]
             elif self.color == _NodeColor.Node_Green:
                 self.children = [
 
-                    MSPTree._Node(o, _NodeColor.Node_Green, _NodeType.CC_Node),
+                    MSPTree._Node(o, _NodeColor.Node_Green, _NodeType.CC_Node, ns),
 
                     MSPTree._Node(self._aas(o, (0.25, 0.0, 0.0), scale),
-                                  _NodeColor.Node_Blue, _NodeType.CC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.CC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.0, 0.25, 0.0), scale),
-                                  _NodeColor.Node_Blue, _NodeType.CC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.CC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.0, 0.0, 0.25), scale),
-                                  _NodeColor.Node_Blue, _NodeType.CC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.CC_Node, ns),
 
                     MSPTree._Node(self._aas(o, (-0.25, 0.0, 0.0), scale),
-                                  _NodeColor.Node_Blue, _NodeType.CC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.CC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.0, -0.25, 0.0), scale),
-                                  _NodeColor.Node_Blue, _NodeType.CC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.CC_Node, ns),
                     MSPTree._Node(self._aas(o, (0.0, 0.0, -0.25), scale),
-                                  _NodeColor.Node_Blue, _NodeType.CC_Node),
+                                  _NodeColor.Node_Blue, _NodeType.CC_Node, ns),
 
                 ]
             elif self.color == _NodeColor.Node_Blue:
                 self.children = [
-                    MSPTree._Node(o, _NodeColor.Node_Red, _NodeType.CC_Node)
+                    MSPTree._Node(o, _NodeColor.Node_Red, _NodeType.CC_Node, ns)
                 ]
             elif self.color == _NodeColor.Yellow:
                 self.children = [
-                    MSPTree._Node(o, _NodeColor.Node_Green, _NodeType.CC_Node)
+                    MSPTree._Node(o, _NodeColor.Node_Green, _NodeType.CC_Node, ns)
                 ]
             else:
                 raise MSPNodeException("Attempted to expand an invalid node color", self)
