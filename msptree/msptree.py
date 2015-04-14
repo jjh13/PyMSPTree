@@ -64,15 +64,21 @@ class MSPTree(object):
             self.lattice = lattice_type
             self.children = []
 
+        def __unicode__(self):
+            return "Node at %s" % str(self.position)
+
+        def __str__(self):
+            return "Node at %s" % str(self.position)
+
         def find_closest_node(self, point):
-            dot = lambda x, y: x[0]*y[0] + x[1]*y[1] + x[2]*y[2]
+            dot = lambda x, y: abs((x[0]-y[0])*(x[0] - y[0]) + (x[1]-y[1])*(x[1] - y[1]) + (x[2]-y[2])*(x[2]-y[2]))
             if len(self.children) <= 0:
                 return self
             node = min([(dot(point, n.position), n) for n in self.children], key=lambda x: x[0])[1]
             return node.find_closest_node(point)
 
         def expand_to(self, point, depth=0, max_depth=12):
-            dot = lambda x, y: x[0]*y[0] + x[1]*y[1] + x[2]*y[2]
+            dot = lambda x, y: abs((x[0]-y[0])*(x[0] - y[0]) + (x[1]-y[1])*(x[1] - y[1]) + (x[2]-y[2])*(x[2]-y[2]))
             if depth >= max_depth:
                 return
 
@@ -398,11 +404,11 @@ class MSPTree(object):
         self.tree_type = tree_type
 
     def find_closest_node(self, point, level=-1):
-        dot = lambda x, y: x[0]*y[0] + x[1]*y[1] + x[2]*y[2]
+        dot = lambda x, y: abs((x[0]-y[0])*(x[0] - y[0]) + (x[1]-y[1])*(x[1] - y[1]) + (x[2]-y[2])*(x[2]-y[2]))
         node = min([(dot(point, n.position), n) for n in self.roots], key=lambda x: x[0])[1]
         return node.find_closest_node(point)
 
     def expand_to(self, point):
-        dot = lambda x, y: x[0]*y[0] + x[1]*y[1] + x[2]*y[2]
+        dot = lambda x, y: abs((x[0]-y[0])*(x[0] - y[0]) + (x[1]-y[1])*(x[1] - y[1]) + (x[2]-y[2])*(x[2]-y[2]))
         node = min([(dot(point, n.position), n) for n in self.roots], key=lambda x: x[0])[1]
         node.expand_to(point, 0, self.max_depth)
