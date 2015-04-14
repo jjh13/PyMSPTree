@@ -1,5 +1,5 @@
 import unittest
-from .. msptree import *
+from .. msptree import MSPTree, _NodeType
 
 
 class TestMSPTree(unittest.TestCase):
@@ -17,6 +17,16 @@ class TestMSPTree(unittest.TestCase):
 
         nd = tree.find_closest_node((0.1, 0.1, 0.1))
         self.assertEquals(nd.position, (0, 0, 0))
+
+        self.assertEquals(nd.lattice, _NodeType.CC_Node)
+
+
+    def test_root_expansion(self):
+        tree = MSPTree(12)
+
+        nd = tree.find_closest_node((0.1, 0.1, 0.1))
+        nd.expand_node(1, 1.)
+
 
     def text_expand_all_8(self):
         pass

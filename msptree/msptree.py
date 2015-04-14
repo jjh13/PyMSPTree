@@ -78,6 +78,10 @@ class MSPTree(object):
             return node.find_closest_node(point)
 
         def expand_to(self, point, depth=0, max_depth=12):
+            """
+            Expands the MSP down to the closest lattice max_depth
+            levels deep
+            """
             dot = lambda x, y: abs((x[0]-y[0])*(x[0] - y[0]) + (x[1]-y[1])*(x[1] - y[1]) + (x[2]-y[2])*(x[2]-y[2]))
             if depth >= max_depth:
                 return
