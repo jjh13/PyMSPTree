@@ -88,8 +88,7 @@ class MSPTree(object):
                 return
 
             if len(self.children) <= 0:
-                scale = 0.5**int(depth/3)
-                self.expand_node(depth, scale)
+                self.expand_node()
 
             node = min([(dot(point, n.position), n) for n in self.children], key=lambda x: x[0])[1]
             node.expand_to(point, depth+1, max_depth)
@@ -302,7 +301,7 @@ class MSPTree(object):
                 self.children = [
                     MSPTree._Node(o, _NodeColor.Node_Red, _NodeType.BCC_Node, ns)
                 ]
-            elif self.color == _NodeColor.Yellow:
+            elif self.color == _NodeColor.Node_Yellow:
                 self.children = [
                     MSPTree._Node(o, _NodeColor.Node_Green, _NodeType.BCC_Node, ns)
                 ]
@@ -356,7 +355,7 @@ class MSPTree(object):
                 self.children = [
                     MSPTree._Node(o, _NodeColor.Node_Red, _NodeType.CC_Node, ns)
                 ]
-            elif self.color == _NodeColor.Yellow:
+            elif self.color == _NodeColor.Node_Yellow:
                 self.children = [
                     MSPTree._Node(o, _NodeColor.Node_Green, _NodeType.CC_Node, ns)
                 ]
