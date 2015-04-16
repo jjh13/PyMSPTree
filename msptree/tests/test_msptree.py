@@ -66,5 +66,27 @@ class TestMSPTree(unittest.TestCase):
 
         export_obj(tree, 'msp_lv1_exp.obj')
 
+    def test_export_second_level_expand(self):
+        tree = MSPTree(12)
+
+        for root in tree.roots:
+            root.expand_node()
+            for child in root.children:
+                child.expand_node()
+
+        export_obj(tree, 'msp_lv2_exp.obj')
+
+    def test_export_third_level_expand(self):
+        tree = MSPTree(12)
+
+        for root in tree.roots:
+            root.expand_node()
+            for child in root.children:
+                child.expand_node()
+                for grandchild in child.children:
+                    grandchild.expand_node()
+
+        export_obj(tree, 'msp_lv3_exp.obj')
+
 if __name__ == '__main__':
     unittest.main()

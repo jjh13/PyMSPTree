@@ -37,6 +37,7 @@ class _NodeColor:
         pass
 
 
+
 class MSPNodeException(Exception):
 
     def __init__(self, text, node):
@@ -44,7 +45,7 @@ class MSPNodeException(Exception):
         self.node = node
 
     def __str__(self):
-        pass
+        return "(%s,%s) %s (%s)" % (self.node.color, self.node.lattice, self.error, str(self.node))
 
 
 class MSPTree(object):
@@ -301,9 +302,9 @@ class MSPTree(object):
                 self.children = [
                     MSPTree._Node(o, _NodeColor.Node_Red, _NodeType.BCC_Node, ns)
                 ]
-            elif self.color == _NodeColor.Node_Yellow:
+            elif self.color == _NodeColor.Node_Ghost:
                 self.children = [
-                    MSPTree._Node(o, _NodeColor.Node_Green, _NodeType.BCC_Node, ns)
+                    MSPTree._Node(o, _NodeColor.Node_Blue, _NodeType.BCC_Node, ns)
                 ]
             else:
                 raise MSPNodeException("Attempted to expand an invalid node color", self)
@@ -360,7 +361,7 @@ class MSPTree(object):
                     MSPTree._Node(o, _NodeColor.Node_Green, _NodeType.CC_Node, ns)
                 ]
             else:
-                raise MSPNodeException("Attempted to expand an invalid node color", self)
+                raise MSPNodeException("Attempted to expand an invalid node color: %s" % self.color, self)
 
     #
     #
