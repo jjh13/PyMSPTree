@@ -95,11 +95,44 @@ class TestMSPTree(unittest.TestCase):
             root.expand_node()
             for child in root.children:
                 child.expand_node()
+                if child.scale != 1.0:
+                    print ('ch', child.scale, 1.0, child.color, child.lattice)
                 for grandchild in child.children:
                     grandchild.expand_node()
+
+                    if grandchild.scale != 0.5:
+                        print ('gc', grandchild.scale, 0.5, grandchild.color, grandchild.lattice)
                     for ggc in grandchild.children:
                         ggc.expand_node()
+                        if ggc.scale != 0.5:
+                            print ('ggc', ggc.scale, 0.5, ggc.color, ggc.lattice)
 
         export_obj(tree, 'msp_lv4_exp.obj')
+
+    def test_center_expand(self):
+        tree = MSPTree(12)
+
+        print 'dont be greedy'
+        nd = tree.find_closest_node((0, 0, 0))
+        nd.expand_node()
+        export_obj(tree, 'msp_c0_exp.obj')
+
+        nd = tree.find_closest_node((0, 0, 0))
+        nd.expand_node()
+        export_obj(tree, 'msp_c1_exp.obj')
+
+        nd = tree.find_closest_node((0, 0, 0))
+        nd.expand_node()
+        export_obj(tree, 'msp_c2_exp.obj')
+
+        nd = tree.find_closest_node((0, 0, 0))
+        nd.expand_node()
+        export_obj(tree, 'msp_c3_exp.obj')
+
+        nd = tree.find_closest_node((0, 0, 0))
+        nd.expand_node()
+        export_obj(tree, 'msp_c4_exp.obj')
+
+
 if __name__ == '__main__':
     unittest.main()

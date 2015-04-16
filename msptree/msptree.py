@@ -37,7 +37,6 @@ class _NodeColor:
         pass
 
 
-
 class MSPNodeException(Exception):
 
     def __init__(self, text, node):
@@ -103,25 +102,28 @@ class MSPTree(object):
 
             scale = self.scale
             if self.lattice == _NodeType.CC_Node:
+                #print 'cc'
                 self._expand_cc_node(scale)
             elif self.lattice == _NodeType.BCC_Node:
+                #print 'bcc'
                 self._expand_bcc_node(scale)
             elif self.lattice == _NodeType.FCC_Node:
+                #print 'fcc'
                 self._expand_fcc_node(scale)
             else:
                 raise MSPNodeException("Tree node had an invalid lattice type.", self)
 
         @staticmethod
         def _aas(a, b, scale):
-            return a[0] + b[0]*scale, a[1]+b[1]*scale, a[2]+b[2]*scale
+            return a[0] + (b[0]*scale), a[1]+(b[1]*scale), a[2]+(b[2]*scale)
 
         def _expand_cc_node(self, scale):
             o = self.position
-            ns = self.scale * 0.5
+            ns = self.scale
             if self.color == _NodeColor.Node_Red:
                 self.children = [
 
-                    MSPTree._Node(o, _NodeColor.Node_Red, _NodeType.FCC_Node),
+                    MSPTree._Node(o, _NodeColor.Node_Red, _NodeType.FCC_Node, None, ns),
 
                     # Add child blue nodes
                     MSPTree._Node(self._aas(o, (-0.5, 0.5, 0.0), scale),
@@ -173,7 +175,7 @@ class MSPTree(object):
             elif self.color == _NodeColor.Node_Green:
                 self.children = [
 
-                    MSPTree._Node(o, _NodeColor.Node_Green, _NodeType.FCC_Node),
+                    MSPTree._Node(o, _NodeColor.Node_Green, _NodeType.FCC_Node, None, ns),
 
                     # Add child blue nodes
                     MSPTree._Node(self._aas(o, (-0.5, 0.5, 0.0), scale),
@@ -311,7 +313,7 @@ class MSPTree(object):
 
         def _expand_bcc_node(self, scale):
             o = self.position
-            ns = self.scale
+            ns = self.scale*0.5
             if self.color == _NodeColor.Node_Red:
                 self.children = [
 
