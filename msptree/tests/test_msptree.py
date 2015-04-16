@@ -19,6 +19,28 @@ def export_obj(tree, output):
     fh.close()
 
 
+def export_obj_normal(tree, output):
+    def traverse(node, filep):
+        if len(node.children) == 0:
+            p = node.position
+            if -1 <= p[0] <= 1 and -1 <= p[1] <= 1 and -1 <= p[2] <= 1 and \
+                    node.color != _NodeColor.Node_Ghost and\
+                    hasattr(node, 'value') and \
+                    node.value is not None:
+
+                n = node.value
+                filep.write('v %f %f %f \n' % (p[0], p[1], p[2]))
+                filep.write('vn %f %f %f \n' % (n[0], n[1], n[2]))
+        else:
+            for child in node.children:
+                traverse(child, filep)
+
+    fh = open(output, 'w')
+    for root in tree.roots:
+        traverse(root, fh)
+    fh.close()
+
+
 class TestMSPTree(unittest.TestCase):
 
     def test_init(self):
@@ -154,7 +176,7 @@ class TestMSPTree(unittest.TestCase):
 
     def test_sphere_expansion(self):
         samples = 100000
-        tree = MSPTree(12)
+        tree = MSPTree(15)
 
         f = open('out.obj', 'w')
 
@@ -164,10 +186,10 @@ class TestMSPTree(unittest.TestCase):
             x = math.sin(theta)*math.sqrt(1-z*z)
             y = math.cos(theta)*math.sqrt(1-z*z)
 
-            tree.expand_to((x,y,z))
+            tree.expand_to((x,y,z)).value = (x,y,z)
             f.write("v %f %f %f \n" % (x,y,z))
         f.close()
-        export_obj(tree, 'tree_sphere.obj')
+        export_obj_normal(tree, 'tree_sphere.obj')
 
 
 if __name__ == '__main__':

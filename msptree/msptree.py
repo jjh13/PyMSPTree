@@ -85,13 +85,13 @@ class MSPTree(object):
             """
             dot = lambda x, y: abs((x[0]-y[0])*(x[0] - y[0]) + (x[1]-y[1])*(x[1] - y[1]) + (x[2]-y[2])*(x[2]-y[2]))
             if depth >= max_depth:
-                return
+                return self
 
             if len(self.children) <= 0:
                 self.expand_node()
 
             node = min([(dot(point, n.position), n) for n in self.children], key=lambda x: x[0])[1]
-            node.expand_to(point, depth+1, max_depth)
+            return node.expand_to(point, depth+1, max_depth)
 
         def expand_node(self):
             """
@@ -422,4 +422,4 @@ class MSPTree(object):
     def expand_to(self, point):
         dot = lambda x, y: abs((x[0]-y[0])*(x[0] - y[0]) + (x[1]-y[1])*(x[1] - y[1]) + (x[2]-y[2])*(x[2]-y[2]))
         node = min([(dot(point, n.position), n) for n in self.roots], key=lambda x: x[0])[1]
-        node.expand_to(point, 0, self.max_depth)
+        return node.expand_to(point, 0, self.max_depth)
