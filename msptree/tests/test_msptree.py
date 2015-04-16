@@ -1,6 +1,7 @@
 import unittest
 from .. msptree import MSPTree, _NodeType, _NodeColor
-
+import random
+import math
 
 def export_obj(tree, output):
     def traverse(node, filep):
@@ -148,6 +149,25 @@ class TestMSPTree(unittest.TestCase):
         nd = tree.find_closest_node((0, 0, 0))
         nd.expand_node()
         export_obj(tree, 'msp_c4_exp.obj')
+
+
+
+    def test_sphere_expansion(self):
+        samples = 100000
+        tree = MSPTree(12)
+
+        f = open('out.obj', 'w')
+
+        for _ in xrange(samples):
+            z = 2*random.random() - 1
+            theta = 2*math.pi*random.random() - math.pi
+            x = math.sin(theta)*math.sqrt(1-z*z)
+            y = math.cos(theta)*math.sqrt(1-z*z)
+
+            tree.expand_to((x,y,z))
+            f.write("v %f %f %f \n" % (x,y,z))
+        f.close()
+        export_obj(tree, 'tree_sphere.obj')
 
 
 if __name__ == '__main__':
