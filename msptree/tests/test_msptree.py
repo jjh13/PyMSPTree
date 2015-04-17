@@ -20,7 +20,7 @@ def export_obj(tree, output):
 
 
 def export_obj_normal(tree, output):
-    def traverse(node, filep):
+    def traverse(node, filep, nr=False):
         if len(node.children) == 0:
             p = node.position
             if -1 <= p[0] <= 1 and -1 <= p[1] <= 1 and -1 <= p[2] <= 1 and \
@@ -29,15 +29,18 @@ def export_obj_normal(tree, output):
                     node.value is not None:
 
                 n = node.value
-                filep.write('v %f %f %f \n' % (p[0], p[1], p[2]))
-                filep.write('vn %f %f %f \n' % (n[0], n[1], n[2]))
+                if not nr:
+                    filep.write('v %f %f %f \n' % (p[0], p[1], p[2]))
+                else:
+                    filep.write('vn %f %f %f \n' % (n[0], n[1], n[2]))
         else:
             for child in node.children:
-                traverse(child, filep)
+                traverse(child, filep, nr)
 
     fh = open(output, 'w')
     for root in tree.roots:
         traverse(root, fh)
+        traverse(root, fh, True)
     fh.close()
 
 
@@ -125,7 +128,6 @@ class TestMSPTree(unittest.TestCase):
 
         export_obj(tree, 'msp_lv4_exp.obj')
 
-
     def test_export_seventh_level_expand(self):
         tree = MSPTree(12)
 
@@ -172,10 +174,42 @@ class TestMSPTree(unittest.TestCase):
         nd.expand_node()
         export_obj(tree, 'msp_c4_exp.obj')
 
+    def test_horse_expansion(self):
+        dist = lambda x, y: abs((x[0]-y[0])*(x[0] - y[0]) + (x[1]-y[1])*(x[1] - y[1]) + (x[2]-y[2])*(x[2]-y[2]))**0.5
 
+        f = open('horse.xyz')
+        tree = MSPTree(18)
+
+        l = f.readline()
+        verts = []
+
+        while l != "":
+            verts += [map(float, l.split())]
+            l = f.readline()
+
+        c = [sum(map(lambda x: x[0], verts)),
+             sum(map(lambda x: x[1], verts)),
+             sum(map(lambda x: x[2], verts))]
+        c = map(lambda x: x/len(verts), c)
+
+        def cnter(p):
+            return [p[0]-c[0], p[1]-c[1], p[2]-c[2]]
+        verts = map(cnter, verts)
+
+        ds = [dist(p, [0,0,0]) for p in verts]
+
+        scale = max(ds)
+        print c, scale
+
+        verts = [(p[0]/scale, p[1]/scale, p[2]/scale) for p in verts]
+
+        for v in verts:
+            x,y,z = v
+            tree.expand_to((x,y,z)).value = (x,y,z)
+        export_obj_normal(tree, 'tree_horse.obj')
 
     def test_sphere_expansion(self):
-        samples = 100000
+        samples = 1000
         tree = MSPTree(15)
 
         f = open('out.obj', 'w')
