@@ -178,7 +178,7 @@ class TestMSPTree(unittest.TestCase):
         dist = lambda x, y: abs((x[0]-y[0])*(x[0] - y[0]) + (x[1]-y[1])*(x[1] - y[1]) + (x[2]-y[2])*(x[2]-y[2]))**0.5
 
         f = open('horse.xyz')
-        tree = MSPTree(18)
+        tree = MSPTree(24)
 
         l = f.readline()
         verts = []
